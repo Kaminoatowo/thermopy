@@ -19,10 +19,7 @@ def test_systems():
     
     print("Testing classes for thermodynamic systems: \n")
 
-    myThermo_open = system_class.thermo_system("o")   
-    
-
-
+    #myThermo_open = system_class.thermo_system("o")   
       
 if __name__ == '__main__':
     test_laws()
