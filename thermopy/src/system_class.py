@@ -18,7 +18,7 @@ class ideal_gas:
                             [["r", "f"], ["r", "f"]]]
 
     # state quantities
-    energy = 0
+    internal_energy = 0
     volume = 0
     pressure = 0
     entropy = 0
@@ -33,7 +33,9 @@ class ideal_gas:
                 - boltzmann * self.number_of_particles * self.temperature)
 
     # derivative quantities
-    heat_capacity_v = 1
+    specific_heat_v_mol = 1
+    specific_heat_p_mol = specific_heat_v_mol + R
+    heat_capacity_v = specific_heat_v_mol * number_of_particles * avogadro
     heat_capacity_p = heat_capacity_v + number_of_particles * boltzmann
 
     # thermodynamic processes
@@ -76,5 +78,53 @@ class ideal_gas:
         else: 
             self.volume = new_volume
         self.temperature = new_temperature
+        self.internal_energy += self.heat_capacity_v * (new_temperature - self.temperature)
 
         return heat, work
+    
+    def isochoric(self, new_pressure=None, new_temperature=None):
+
+        if new_temperature is None:
+            if new_pressure is None:
+                raise Exception("At least a new pressure or a new temperature must be passed as argument.")
+            else:
+                new_temperature = self.temperature / self.pressure * new_pressure
+
+        work = 0.0
+
+        heat = self.heat_capacity_v * (new_temperature - self.temperature)
+
+        if new_pressure is None:
+            self.pressure = self.pressure / self.temperature * new_temperature
+        else: 
+            self.pressure = new_pressure
+        self.temperature = new_temperature
+        self.internal_energy += heat
+
+        return heat, work
+    
+    def adiabatic(self, new_volume=None, new_pressure=None, new_temperature=None):
+        
+        gamma = self.heat_capacity_p / self.heat_capacity_v
+
+        if new_temperature is None:
+            if (new_pressure is None) and (new_volume is None):
+                raise Exception("At least one of new volume, new pressure or new temperature must be passed as argument.")
+            elif new_volume is None:
+                new_temperature = (new_pressure / self.pressure) ^ (1 - 1 / gamma) * self.temperature            
+            elif new_pressure is None:
+                new_temperature = (self.volume / new_volume) ^ (gamma - 1) * self.temperature
+            
+        work = - self.heat_capacity_v * (new_temperature - self.temperature)
+
+        heat = 0.0
+
+        if new_volume is None:
+            self.volume = (self.temperature / new_temperature) ^ (1 / (gamma - 1)) * self.volume
+        if new_pressure is None:
+            self.pressure = (new_temperature / self.temperature) ^ (gamma / (gamma -1)) * self.pressure
+        self.temperature = new_temperature
+        self.internal_energy -= work
+
+        return heat, work
+    

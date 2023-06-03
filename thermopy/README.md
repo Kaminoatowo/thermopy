@@ -64,11 +64,7 @@ The boundary object is a list of dimension ($3 \times 2 \times 2$), for a cubic 
 
 **State quantities**:
 
--   energy
-    -   enthalpy
-    -   internal energy
-    -   Gibbs free energy
-    -   Helmholtz free energy
+-   internal energy
 -   entropy
 -   pressure
 -   temperature
@@ -82,3 +78,7 @@ The boundary object is a list of dimension ($3 \times 2 \times 2$), for a cubic 
 -   isobaric
 -   isochoric
 -   isothermal
+
+**System-specific properties**
+
+-   molar specific heat at constant volume/pressure
